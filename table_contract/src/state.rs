@@ -1,21 +1,29 @@
+use cosmwasm_std::Addr;
 use schemars::JsonSchema;
+use secret_toolkit::storage::{Keymap, KeymapBuilder};
+use secret_toolkit::{serialization::Bincode2, storage::Item};
 use serde::{Deserialize, Serialize};
 
-use cosmwasm_std::{Addr, Storage};
-use cosmwasm_storage::{singleton, singleton_read, ReadonlySingleton, Singleton};
-
-pub static CONFIG_KEY: &[u8] = b"config";
+pub const TABLE_INFO: Item<TableInfo> = Item::new(b"contacts_count");
 
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq, JsonSchema)]
-pub struct State {
-    pub count: i32,
-    pub owner: Addr,
+pub struct TableInfo {
+    owner: Addr,        // owner of table
+    table_name: String, // custom table name
+    table_index: u32,
 }
 
-pub fn config(storage: &mut dyn Storage) -> Singleton<State> {
-    singleton(storage, CONFIG_KEY)
+pub const TABLE: Keymap<CellCoords, String, Bincode2> = KeymapBuilder::new(b"secrets").build();
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq, JsonSchema)]
+pub struct CellCoords {
+    x: i32,
+    y: i32,
 }
 
-pub fn config_read(storage: &dyn Storage) -> ReadonlySingleton<State> {
-    singleton_read(storage, CONFIG_KEY)
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq, JsonSchema)]
+pub struct Cell {
+    coords: CellCoords,
+    value: String,
 }
+
+// TODO: functions to interact with Map in a friendly way

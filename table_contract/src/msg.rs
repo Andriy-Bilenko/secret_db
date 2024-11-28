@@ -1,27 +1,47 @@
+use crate::state::{Cell, CellCoords};
+use cosmwasm_std::Addr;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq, JsonSchema)]
 pub struct InstantiateMsg {
-    pub count: i32,
+    pub table_name: String,
+    pub table_index: u32,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum ExecuteMsg {
-    Increment {},
-    Reset { count: i32 },
+    AddOrUpdateCells { cells: Vec<Cell> },
+    RemoveCells { coords_vec: Vec<CellCoords> },
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum QueryMsg {
-    // GetCount returns the current count as a json-encoded number
-    GetCount {},
+    GetTableInfo {},
+    GetCellStr { xy: CellCoords },
+    GetAllCells {},
 }
 
-// We define a custom struct for each query response
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq, JsonSchema)]
 pub struct CountResponse {
     pub count: i32,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq, JsonSchema)]
+pub struct TableInfoRespose {
+    pub owner: Addr,
+    pub table_name: String,
+    pub table_index: u32,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq, JsonSchema)]
+pub struct CellStrRespose {
+    pub cell_str: String,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq, JsonSchema)]
+pub struct AllCellsRespose {
+    pub cells: Vec<Cell>,
 }
